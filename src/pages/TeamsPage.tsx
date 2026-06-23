@@ -10,7 +10,7 @@ const CATEGORIES = [
 ]
 
 function empty(): Team {
-  return { id: '', name: '', category: 'Infantil', gender: 'M' }
+  return { id: '', name: '', category: 'Infantil', gender: 'M', sessionsPerWeek: 2 }
 }
 
 const GENDER_STYLES: Record<Gender, { bg: string; border: string; text: string; badge: string }> = {
@@ -156,6 +156,20 @@ export default function TeamsPage() {
                     </button>
                   ))}
                 </div>
+              </div>
+              <div>
+                <label className="text-sm text-gray-400 block mb-1">Sesiones por semana</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={14}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                  value={form.sessionsPerWeek ?? 2}
+                  onChange={e => {
+                    const n = Math.max(0, Math.min(14, parseInt(e.target.value || '0', 10)))
+                    setForm({ ...form, sessionsPerWeek: Number.isNaN(n) ? 0 : n })
+                  }}
+                />
               </div>
               {coaches.length > 0 && (
                 <div>

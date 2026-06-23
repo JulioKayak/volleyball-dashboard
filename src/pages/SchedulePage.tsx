@@ -1,11 +1,17 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useStore } from '../store'
 import type { Day, Pavilion, Session } from '../types'
 import { WORK_DAYS, DAY_LABELS } from '../types'
-import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn, ChevronRight, GripVertical } from 'lucide-react'
 import SessionWizard from '../components/SessionWizard'
 import { checkConflicts } from '../utils/conflicts'
 import { nanoid } from '../utils/id'
+
+const DEFAULT_NEW_SESSION_MINUTES = 90
+const TEAM_GENDER_BADGE: Record<'M' | 'F', string> = {
+  M: 'bg-blue-800/60 text-blue-200',
+  F: 'bg-rose-800/60 text-rose-200',
+}
 
 const HOUR_START_DEFAULT = 8
 const HOUR_END_DEFAULT = 23
@@ -43,9 +49,25 @@ export default function SchedulePage() {
   const pxPerHour = ZOOM_LEVELS[zoomIdx]
 
   const dragSessionId = useRef<string | null>(null)
+  const dragNewTeamId = useRef<string | null>(null)
   const [dragOverTarget, setDragOverTarget] = useState<{ pavilionId: string; court: number } | null>(null)
+  const [remainingOpen, setRemainingOpen] = useState(false)
 
   const daySessions = sessions.filter(s => s.day === selectedDay)
+
+  const remainingByTeam = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const s of sessions) counts.set(s.teamId, (counts.get(s.teamId) ?? 0) + 1)
+    return teams
+      .map(t => {
+        const target = t.sessionsPerWeek ?? 0
+        const placed = counts.get(t.id) ?? 0
+        return { team: t, remaining: Math.max(0, target - placed) }
+      })
+      .filter(r => r.remaining > 0)
+  }, [teams, sessions])
+
+  const totalRemaining = remainingByTeam.reduce((sum, r) => sum + r.remaining, 0)
 
   function getTeam(id: string) { return teams.find(t => t.id === id) }
   function getCoach(id: string) { return coaches.find(c => c.id === id) }
@@ -67,34 +89,58 @@ export default function SchedulePage() {
     return msgs
   }
 
+  function minsToTime(m: number) {
+    return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+  }
+
   function handleDrop(e: React.DragEvent, pavilionId: string, court: number, containerEl: HTMLDivElement, hourStart: number, totalHours: number) {
     e.preventDefault()
     setDragOverTarget(null)
-    const id = dragSessionId.current
-    if (!id) return
-    const session = sessions.find(s => s.id === id)
-    if (!session) return
 
     const rect = containerEl.getBoundingClientRect()
     const relativeY = e.clientY - rect.top
     const rawHour = (relativeY - HEADER_PX) / pxPerHour + hourStart
     const newStartHour = Math.max(hourStart, Math.min(hourStart + totalHours - 1, Math.round(rawHour)))
+    const dayEndMins = (hourStart + totalHours) * 60
+
+    const newTeamId = dragNewTeamId.current
+    if (newTeamId) {
+      const team = teams.find(t => t.id === newTeamId)
+      const coach = team ? coaches.find(c => c.teamIds.includes(team.id)) : undefined
+      dragNewTeamId.current = null
+      if (!team || !coach) return
+      const startMins = newStartHour * 60
+      const endMins = Math.min(startMins + DEFAULT_NEW_SESSION_MINUTES, dayEndMins)
+      addSession({
+        id: nanoid(),
+        pavilionId,
+        courtNumber: court,
+        teamId: team.id,
+        coachId: coach.id,
+        day: selectedDay,
+        startTime: minsToTime(startMins),
+        endTime: minsToTime(endMins),
+      })
+      return
+    }
+
+    const id = dragSessionId.current
+    if (!id) return
+    const session = sessions.find(s => s.id === id)
+    if (!session) return
+
     const [startH, startM] = session.startTime.split(':').map(Number)
     const [endH, endM] = session.endTime.split(':').map(Number)
     const durationMins = (endH * 60 + endM) - (startH * 60 + startM)
     const newStartMins = newStartHour * 60
     const newEndMins = newStartMins + durationMins
 
-    function minsToTime(m: number) {
-      return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
-    }
-
     updateSession({
       ...session,
       pavilionId,
       courtNumber: court,
       startTime: minsToTime(newStartMins),
-      endTime: minsToTime(Math.min(newEndMins, (hourStart + totalHours) * 60)),
+      endTime: minsToTime(Math.min(newEndMins, dayEndMins)),
     })
     dragSessionId.current = null
   }
@@ -154,6 +200,71 @@ export default function SchedulePage() {
             </button>
           )
         })}
+      </div>
+
+      {/* Remaining sessions (collapsible) */}
+      <div className="mb-5 bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <button
+          onClick={() => setRemainingOpen(o => !o)}
+          className="w-full flex items-center justify-between gap-2 px-4 py-3 hover:bg-gray-800/40 transition-colors text-left"
+        >
+          <div className="flex items-center gap-2">
+            <ChevronRight
+              size={16}
+              className={`text-gray-400 transition-transform ${remainingOpen ? 'rotate-90' : ''}`}
+            />
+            <span className="font-semibold text-sm">Sesiones restantes</span>
+            {totalRemaining > 0 && (
+              <span className="text-[10px] font-semibold bg-amber-900/40 text-amber-300 px-2 py-0.5 rounded-full">
+                {totalRemaining}
+              </span>
+            )}
+          </div>
+          <span className="text-xs text-gray-500 hidden sm:block">
+            {totalRemaining > 0 ? 'Arrastra una tarjeta al horario' : 'Todo asignado'}
+          </span>
+        </button>
+        {remainingOpen && (
+          <div className="border-t border-gray-800 p-3">
+            {remainingByTeam.length === 0 ? (
+              <p className="text-sm text-gray-500 px-1 py-2">
+                No hay sesiones pendientes esta semana. Ajusta las "sesiones por semana" en cada equipo para usar esta función.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {remainingByTeam.flatMap(({ team, remaining }) => {
+                  const coach = coaches.find(c => c.teamIds.includes(team.id))
+                  const disabled = !coach
+                  return Array.from({ length: remaining }, (_, i) => (
+                    <div
+                      key={`${team.id}-${i}`}
+                      draggable={!disabled}
+                      onDragStart={e => {
+                        if (disabled) { e.preventDefault(); return }
+                        dragNewTeamId.current = team.id
+                        e.dataTransfer.effectAllowed = 'copy'
+                      }}
+                      onDragEnd={() => { dragNewTeamId.current = null; setDragOverTarget(null) }}
+                      title={disabled ? 'Asigna un entrenador al equipo para poder arrastrar' : `Arrastra para crear una sesión de ${team.name}`}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm select-none transition-colors ${
+                        disabled
+                          ? 'border-gray-800 bg-gray-900 text-gray-600 cursor-not-allowed opacity-60'
+                          : 'border-gray-700 bg-gray-800/60 hover:border-indigo-500 hover:bg-indigo-900/20 text-gray-100 cursor-grab active:cursor-grabbing'
+                      }`}
+                    >
+                      <GripVertical size={12} className="text-gray-500 shrink-0" />
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${TEAM_GENDER_BADGE[team.gender ?? 'M']}`}>
+                        {team.gender ?? 'M'}
+                      </span>
+                      <span className="font-medium truncate max-w-[160px]">{team.name}</span>
+                      <span className="text-[10px] text-gray-500 shrink-0">{team.category}</span>
+                    </div>
+                  ))
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {pavilions.length === 0 && (

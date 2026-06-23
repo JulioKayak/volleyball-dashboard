@@ -39,6 +39,7 @@ export interface Team {
   name: string
   category: string
   gender: Gender
+  sessionsPerWeek?: number
 }
 
 export interface Coach {
