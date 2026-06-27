@@ -60,7 +60,7 @@ export default function SchedulePage() {
     for (const s of sessions) counts.set(s.teamId, (counts.get(s.teamId) ?? 0) + 1)
     return teams
       .map(t => {
-        const target = t.sessionsPerWeek ?? 0
+        const target = t.sessionsPerWeek ?? 3
         const placed = counts.get(t.id) ?? 0
         return { team: t, remaining: Math.max(0, target - placed) }
       })
