@@ -10,7 +10,7 @@ const CATEGORIES = [
 ]
 
 function empty(): Team {
-  return { id: '', name: '', category: 'Infantil', gender: 'M', sessionsPerWeek: 2 }
+  return { id: '', name: '', category: 'Infantil', gender: 'M', sessionsPerWeek: 3 }
 }
 
 const GENDER_STYLES: Record<Gender, { bg: string; border: string; text: string; badge: string }> = {
@@ -164,7 +164,7 @@ export default function TeamsPage() {
                   min={0}
                   max={14}
                   className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
-                  value={form.sessionsPerWeek ?? 2}
+                  value={form.sessionsPerWeek ?? 3}
                   onChange={e => {
                     const n = Math.max(0, Math.min(14, parseInt(e.target.value || '0', 10)))
                     setForm({ ...form, sessionsPerWeek: Number.isNaN(n) ? 0 : n })
