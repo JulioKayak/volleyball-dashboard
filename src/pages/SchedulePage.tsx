@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useStore } from '../store'
 import type { Day, Pavilion, Session } from '../types'
 import { WORK_DAYS, DAY_LABELS } from '../types'
-import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn, ChevronRight, GripVertical } from 'lucide-react'
+import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn, ChevronRight, GripVertical, X, ChevronDown, ChevronUp } from 'lucide-react'
 import SessionWizard from '../components/SessionWizard'
 import { checkConflicts } from '../utils/conflicts'
 import { nanoid } from '../utils/id'
@@ -52,6 +52,19 @@ export default function SchedulePage() {
   const dragNewTeamId = useRef<string | null>(null)
   const [dragOverTarget, setDragOverTarget] = useState<{ pavilionId: string; court: number } | null>(null)
   const [remainingOpen, setRemainingOpen] = useState(false)
+  const [collapsedPavs, setCollapsedPavs] = useState<Set<string>>(new Set())
+  const [errorPopup, setErrorPopup] = useState<{ session: Session; messages: string[] } | null>(null)
+
+  function pavKey(pavId: string, day: Day) { return `${pavId}-${day}` }
+  function togglePavCollapse(pavId: string) {
+    const key = pavKey(pavId, selectedDay)
+    setCollapsedPavs(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
 
   const daySessions = sessions.filter(s => s.day === selectedDay)
 
@@ -273,14 +286,24 @@ export default function SchedulePage() {
         </div>
       )}
 
-      {pavilions.length > 0 && (
+      {pavilions.length > 0 && (() => {
+        const visiblePavilions = pavilions.filter(pav => pav.availability?.[selectedDay]?.available !== false)
+        if (visiblePavilions.length === 0) {
+          return (
+            <div className="border border-dashed border-gray-700 rounded-xl p-10 text-center text-gray-500">
+              Ningún pabellón está disponible {DAY_LABELS[selectedDay].toLowerCase()}.
+            </div>
+          )
+        }
+        return (
         <div className={zoomIdx === 0 ? 'flex gap-3 items-start' : 'space-y-5'}>
-          {pavilions.map(pav => {
+          {visiblePavilions.map(pav => {
             const pavSessions = daySessions.filter(s => s.pavilionId === pav.id)
             const { start: hourStart, end: hourEnd } = getPavilionHourRange(pav, selectedDay)
             const totalHours = hourEnd - hourStart
             const gridHeight = totalHours * pxPerHour + HEADER_PX + 8
             const hours = Array.from({ length: totalHours + 1 }, (_, i) => hourStart + i)
+            const collapsed = collapsedPavs.has(pavKey(pav.id, selectedDay))
 
             function sessionTop(s: Session) {
               return timeToFraction(s.startTime, hourStart, totalHours) * totalHours * pxPerHour + HEADER_PX
@@ -292,16 +315,20 @@ export default function SchedulePage() {
             return (
               <div key={pav.id} className={`bg-gray-900 border border-gray-800 rounded-xl overflow-hidden${zoomIdx === 0 ? ' flex-1 min-w-0' : ''}`}>
                 <div
-                  className="px-4 py-3 flex items-center gap-3 border-b border-gray-800"
+                  className="px-4 py-3 flex items-center gap-3 border-b border-gray-800 cursor-pointer hover:bg-gray-800/40 transition-colors select-none"
                   style={{ borderLeftWidth: 4, borderLeftColor: pav.color }}
+                  onClick={() => togglePavCollapse(pav.id)}
+                  title={collapsed ? 'Expandir pabellón' : 'Colapsar pabellón'}
                 >
+                  {collapsed ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronUp size={14} className="text-gray-400" />}
                   <span className="font-semibold">{pav.name}</span>
                   <span className="text-xs text-gray-400">{pav.maxCourts} {pav.maxCourts === 1 ? 'pista' : 'pistas'}</span>
                   <span className="text-xs text-gray-500">{hourStart}:00 – {hourEnd}:00</span>
                   <span className="text-xs text-gray-500 ml-auto">{pavSessions.length} sesiones</span>
-                  <span className="text-xs text-gray-600 italic">Arrastra para mover</span>
+                  {!collapsed && <span className="text-xs text-gray-600 italic">Arrastra para mover</span>}
                 </div>
 
+                {!collapsed && (
                 <div>
                   <div className="flex">
                     {/* Hour axis */}
@@ -380,38 +407,37 @@ export default function SchedulePage() {
                                       <p className="text-[9px] text-indigo-300 leading-tight">{s.startTime}–{s.endTime}</p>
                                     )}
                                   </div>
-                                  <div className="flex gap-0.5 shrink-0 items-start">
+                                  <div className="flex gap-1 shrink-0 items-start">
                                     {hasConflict && (
-                                      <div className="relative group/alert">
-                                        <AlertTriangle size={11} className="text-red-400 mt-0.5" />
-                                        <div className="absolute bottom-full right-0 mb-1.5 w-52 bg-gray-950 border border-red-800/60 rounded-lg p-2 shadow-xl hidden group-hover/alert:block z-20 pointer-events-none">
-                                          {conflictMsgs.map((m, i) => (
-                                            <p key={i} className="text-[10px] text-red-300 leading-snug">{m}</p>
-                                          ))}
-                                        </div>
-                                      </div>
+                                      <button
+                                        onClick={e => { e.stopPropagation(); setErrorPopup({ session: s, messages: conflictMsgs }) }}
+                                        className="p-1 text-red-300 hover:text-red-100 hover:bg-red-900/50 rounded"
+                                        title="Ver error"
+                                      >
+                                        <AlertTriangle size={16} strokeWidth={2.5} />
+                                      </button>
                                     )}
-                                    <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                       <button
                                         onClick={e => { e.stopPropagation(); addSession({ ...s, id: nanoid() }) }}
-                                        className="p-0.5 text-indigo-200 hover:text-white"
+                                        className="p-1 text-indigo-200 hover:text-white hover:bg-indigo-800/60 rounded"
                                         title="Duplicar"
                                       >
-                                        <Copy size={10} />
+                                        <Copy size={15} />
                                       </button>
                                       <button
                                         onClick={e => { e.stopPropagation(); setEditSession(s); setWizardOpen(true) }}
-                                        className="p-0.5 text-indigo-200 hover:text-white"
+                                        className="p-1 text-indigo-200 hover:text-white hover:bg-indigo-800/60 rounded"
                                         title="Editar"
                                       >
-                                        <Pencil size={10} />
+                                        <Pencil size={15} />
                                       </button>
                                       <button
                                         onClick={e => { e.stopPropagation(); deleteSession(s.id) }}
-                                        className="p-0.5 text-indigo-200 hover:text-red-300"
+                                        className="p-1 text-indigo-200 hover:text-red-300 hover:bg-red-900/40 rounded"
                                         title="Eliminar"
                                       >
-                                        <Trash2 size={10} />
+                                        <Trash2 size={15} />
                                       </button>
                                     </div>
                                   </div>
@@ -424,11 +450,13 @@ export default function SchedulePage() {
                     })}
                   </div>
                 </div>
+                )}
               </div>
             )
           })}
         </div>
-      )}
+        )
+      })()}
 
       {wizardOpen && (
         <SessionWizard
@@ -437,6 +465,53 @@ export default function SchedulePage() {
           onClose={() => { setWizardOpen(false); setEditSession(null) }}
         />
       )}
+
+      {errorPopup && (() => {
+        const team = getTeam(errorPopup.session.teamId)
+        const coach = getCoach(errorPopup.session.coachId)
+        const pav = pavilions.find(p => p.id === errorPopup.session.pavilionId)
+        return (
+          <div
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+            onClick={e => { if (e.target === e.currentTarget) setErrorPopup(null) }}
+          >
+            <div className="bg-gray-900 border border-red-800/60 rounded-2xl w-full max-w-md shadow-2xl">
+              <div className="p-5 border-b border-red-900/40 flex items-center justify-between">
+                <h3 className="font-bold text-lg flex items-center gap-2 text-red-300">
+                  <AlertTriangle size={18} /> Conflicto en la sesión
+                </h3>
+                <button onClick={() => setErrorPopup(null)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+              </div>
+              <div className="p-5 space-y-3">
+                <div className="text-sm text-gray-300 space-y-0.5">
+                  <p><span className="text-gray-500">Equipo:</span> {team?.name ?? '—'}</p>
+                  <p><span className="text-gray-500">Entrenador:</span> {coach?.name ?? '—'}</p>
+                  <p><span className="text-gray-500">Pabellón:</span> {pav?.name ?? '—'} · Pista {errorPopup.session.courtNumber}</p>
+                  <p><span className="text-gray-500">Horario:</span> {DAY_LABELS[errorPopup.session.day]} {errorPopup.session.startTime}–{errorPopup.session.endTime}</p>
+                </div>
+                <div className="bg-red-950/40 border border-red-800/60 rounded-lg p-3 space-y-1.5">
+                  {errorPopup.messages.map((m, i) => (
+                    <p key={i} className="text-sm text-red-200 flex items-start gap-2">
+                      <AlertTriangle size={14} className="text-red-400 mt-0.5 shrink-0" /> {m}
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <div className="p-4 border-t border-gray-800 flex justify-end gap-2">
+                <button onClick={() => setErrorPopup(null)} className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg">
+                  Cerrar
+                </button>
+                <button
+                  onClick={() => { setEditSession(errorPopup.session); setWizardOpen(true); setErrorPopup(null) }}
+                  className="px-4 py-2 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg"
+                >
+                  Editar sesión
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

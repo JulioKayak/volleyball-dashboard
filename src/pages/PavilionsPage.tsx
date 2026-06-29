@@ -108,7 +108,10 @@ export default function PavilionsPage() {
       </div>
 
       {form && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={e => { if (e.target === e.currentTarget) setForm(null) }}
+        >
           <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] flex flex-col">
             <div className="p-6 border-b border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-lg">{isNew ? 'Nuevo pabellón' : 'Editar pabellón'}</h3>

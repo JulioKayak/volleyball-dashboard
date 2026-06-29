@@ -115,7 +115,10 @@ export default function TeamsPage() {
       </div>
 
       {form && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={e => { if (e.target === e.currentTarget) setForm(null) }}
+        >
           <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="font-bold text-lg mb-4">{isNew ? 'Nuevo equipo' : 'Editar equipo'}</h3>
             <div className="space-y-4">

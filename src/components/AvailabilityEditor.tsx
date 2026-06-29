@@ -23,8 +23,8 @@ function TimeSlotRow({ slot, onChange, onRemove }: { slot: TimeSlot; onChange: (
         onChange={e => onChange({ ...slot, end: e.target.value })}
         className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs focus:outline-none focus:border-indigo-500"
       />
-      <button onClick={onRemove} className="text-gray-500 hover:text-red-400">
-        <X size={12} />
+      <button onClick={onRemove} className="text-gray-500 hover:text-red-400 p-1 hover:bg-gray-700/60 rounded" title="Eliminar franja">
+        <X size={18} strokeWidth={2.5} />
       </button>
     </div>
   )

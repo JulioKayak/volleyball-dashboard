@@ -42,15 +42,16 @@ export default function MultiSelect({ options, selected, onChange, placeholder =
             selectedLabels.map(o => (
               <span
                 key={o.value}
-                className="inline-flex items-center gap-1 bg-indigo-600/30 border border-indigo-600/50 text-indigo-200 text-xs px-2 py-0.5 rounded-full"
+                className="inline-flex items-center gap-1 bg-indigo-600/30 border border-indigo-600/50 text-indigo-200 text-xs pl-2 pr-1 py-0.5 rounded-full"
               >
                 {o.label}
                 <button
                   type="button"
                   onClick={e => { e.stopPropagation(); toggle(o.value) }}
-                  className="hover:text-white"
+                  className="hover:text-white hover:bg-indigo-500/40 rounded-full p-0.5"
+                  title="Quitar"
                 >
-                  <X size={10} />
+                  <X size={14} strokeWidth={2.5} />
                 </button>
               </span>
             ))

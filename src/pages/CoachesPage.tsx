@@ -111,7 +111,10 @@ export default function CoachesPage() {
 
       {/* Edit / create modal */}
       {form && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={e => { if (e.target === e.currentTarget) setForm(null) }}
+        >
           <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] flex flex-col">
             <div className="p-6 border-b border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-lg">{isNew ? 'Nuevo entrenador' : 'Editar entrenador'}</h3>
@@ -203,7 +206,10 @@ function DetailModal({ coach, teams, onClose }: { coach: Coach; teams: Team[]; o
   const availDays = WORK_DAYS.filter(d => coach.availability[d]?.available)
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
       <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md shadow-2xl">
         <div className="p-5 border-b border-gray-800 flex items-center justify-between">
           <h3 className="font-bold text-lg">{coach.name}</h3>
