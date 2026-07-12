@@ -13,6 +13,7 @@ const SLUG_TO_DAY: Record<string, Day> = Object.fromEntries(
 ) as Record<string, Day>
 import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn, ChevronRight, GripVertical, X, ChevronDown, ChevronUp } from 'lucide-react'
 import SessionWizard from '../components/SessionWizard'
+import Tooltip from '../components/Tooltip'
 import { checkConflicts } from '../utils/conflicts'
 import { nanoid } from '../utils/id'
 import { useEscape } from '../utils/useEscape'
@@ -86,13 +87,11 @@ export default function SchedulePage() {
   const remainingByTeam = useMemo(() => {
     const counts = new Map<string, number>()
     for (const s of sessions) counts.set(s.teamId, (counts.get(s.teamId) ?? 0) + 1)
-    return teams
-      .map(t => {
-        const target = t.sessionsPerWeek ?? 3
-        const placed = counts.get(t.id) ?? 0
-        return { team: t, remaining: Math.max(0, target - placed) }
-      })
-      .filter(r => r.remaining > 0)
+    return teams.map(t => {
+      const target = t.sessionsPerWeek ?? 3
+      const placed = counts.get(t.id) ?? 0
+      return { team: t, remaining: Math.max(0, target - placed), target }
+    })
   }, [teams, sessions])
 
   const totalRemaining = remainingByTeam.reduce((sum, r) => sum + r.remaining, 0)
@@ -180,23 +179,25 @@ export default function SchedulePage() {
         <div className="flex items-center gap-2">
           {/* Zoom control */}
           <div className="flex items-center bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-            <button
-              onClick={() => setZoomIdx(i => Math.max(0, i - 1))}
-              disabled={zoomIdx === 0}
-              className="p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-gray-800 transition-colors"
-              title="Vista más compacta"
-            >
-              <ZoomOut size={15} />
-            </button>
+            <Tooltip label="Vista más compacta">
+              <button
+                onClick={() => setZoomIdx(i => Math.max(0, i - 1))}
+                disabled={zoomIdx === 0}
+                className="p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-gray-800 transition-colors"
+              >
+                <ZoomOut size={15} />
+              </button>
+            </Tooltip>
             <span className="text-xs text-gray-400 px-2 min-w-[64px] text-center">{ZOOM_LABELS[zoomIdx]}</span>
-            <button
-              onClick={() => setZoomIdx(i => Math.min(ZOOM_LEVELS.length - 1, i + 1))}
-              disabled={zoomIdx === ZOOM_LEVELS.length - 1}
-              className="p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-gray-800 transition-colors"
-              title="Vista más grande"
-            >
-              <ZoomIn size={15} />
-            </button>
+            <Tooltip label="Vista más grande">
+              <button
+                onClick={() => setZoomIdx(i => Math.min(ZOOM_LEVELS.length - 1, i + 1))}
+                disabled={zoomIdx === ZOOM_LEVELS.length - 1}
+                className="p-2 text-gray-400 hover:text-white disabled:opacity-30 hover:bg-gray-800 transition-colors"
+              >
+                <ZoomIn size={15} />
+              </button>
+            </Tooltip>
           </div>
           <button
             onClick={() => { setEditSession(null); setWizardOpen(true) }}
@@ -256,38 +257,53 @@ export default function SchedulePage() {
           <div className="border-t border-gray-800 p-3">
             {remainingByTeam.length === 0 ? (
               <p className="text-sm text-gray-500 px-1 py-2">
-                No hay sesiones pendientes esta semana. Ajusta las "sesiones por semana" en cada equipo para usar esta función.
+                Crea equipos con "sesiones por semana" para usar esta función.
               </p>
             ) : (
               <div className="flex flex-wrap gap-2">
-                {remainingByTeam.flatMap(({ team, remaining }) => {
+                {remainingByTeam.map(({ team, remaining, target }) => {
                   const coach = coaches.find(c => c.teamIds.includes(team.id))
-                  const disabled = !coach
-                  return Array.from({ length: remaining }, (_, i) => (
-                    <div
-                      key={`${team.id}-${i}`}
-                      draggable={!disabled}
-                      onDragStart={e => {
-                        if (disabled) { e.preventDefault(); return }
-                        dragNewTeamId.current = team.id
-                        e.dataTransfer.effectAllowed = 'copy'
-                      }}
-                      onDragEnd={() => { dragNewTeamId.current = null; setDragOverTarget(null) }}
-                      title={disabled ? 'Asigna un entrenador al equipo para poder arrastrar' : `Arrastra para crear una sesión de ${team.name}`}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm select-none transition-colors ${
-                        disabled
-                          ? 'border-gray-800 bg-gray-900 text-gray-600 cursor-not-allowed opacity-60'
-                          : 'border-gray-700 bg-gray-800/60 hover:border-indigo-500 hover:bg-indigo-900/20 text-gray-100 cursor-grab active:cursor-grabbing'
-                      }`}
-                    >
-                      <GripVertical size={12} className="text-gray-500 shrink-0" />
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${TEAM_GENDER_BADGE[team.gender ?? 'M']}`}>
-                        {team.gender ?? 'M'}
-                      </span>
-                      <span className="font-medium truncate max-w-[160px]">{team.name}</span>
-                      <span className="text-[10px] text-gray-500 shrink-0">{team.category}</span>
-                    </div>
-                  ))
+                  const noCoach = !coach
+                  const allPlaced = remaining === 0
+                  const disabled = noCoach || allPlaced
+                  const tip = noCoach
+                    ? 'Asigna un entrenador al equipo para poder arrastrar'
+                    : allPlaced
+                      ? 'Todas las sesiones ya están asignadas'
+                      : `Arrastra para crear una sesión de ${team.name}`
+                  return (
+                    <Tooltip key={team.id} label={tip}>
+                      <div
+                        draggable={!disabled}
+                        onDragStart={e => {
+                          if (disabled) { e.preventDefault(); return }
+                          dragNewTeamId.current = team.id
+                          e.dataTransfer.effectAllowed = 'copy'
+                        }}
+                        onDragEnd={() => { dragNewTeamId.current = null; setDragOverTarget(null) }}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm select-none transition-colors ${
+                          disabled
+                            ? 'border-gray-800 bg-gray-900 text-gray-600 cursor-not-allowed opacity-60'
+                            : 'border-gray-700 bg-gray-800/60 hover:border-indigo-500 hover:bg-indigo-900/20 text-gray-100 cursor-grab active:cursor-grabbing'
+                        }`}
+                      >
+                        <GripVertical size={12} className={`shrink-0 ${disabled ? 'text-gray-700' : 'text-gray-500'}`} />
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${TEAM_GENDER_BADGE[team.gender ?? 'M']} ${disabled ? 'opacity-60' : ''}`}>
+                          {team.gender ?? 'M'}
+                        </span>
+                        <span className="font-medium truncate max-w-[160px]">{team.name}</span>
+                        <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded shrink-0 tabular-nums ${
+                          allPlaced
+                            ? 'bg-emerald-900/40 text-emerald-400'
+                            : remaining === target
+                              ? 'bg-amber-900/40 text-amber-300'
+                              : 'bg-indigo-900/40 text-indigo-300'
+                        }`}>
+                          {remaining}/{target}
+                        </span>
+                      </div>
+                    </Tooltip>
+                  )
                 })}
               </div>
             )}
@@ -424,36 +440,40 @@ export default function SchedulePage() {
                                   </div>
                                   <div className="flex gap-1 shrink-0 items-start">
                                     {hasConflict && (
-                                      <button
-                                        onClick={e => { e.stopPropagation(); setErrorPopup({ session: s, messages: conflictMsgs }) }}
-                                        className="p-1 text-red-300 hover:text-red-100 hover:bg-red-900/50 rounded"
-                                        title="Ver error"
-                                      >
-                                        <AlertTriangle size={16} strokeWidth={2.5} />
-                                      </button>
+                                      <Tooltip label="Ver error">
+                                        <button
+                                          onClick={e => { e.stopPropagation(); setErrorPopup({ session: s, messages: conflictMsgs }) }}
+                                          className="p-1 text-red-300 hover:text-red-100 hover:bg-red-900/50 rounded"
+                                        >
+                                          <AlertTriangle size={16} strokeWidth={2.5} />
+                                        </button>
+                                      </Tooltip>
                                     )}
                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button
-                                        onClick={e => { e.stopPropagation(); addSession({ ...s, id: nanoid() }) }}
-                                        className="p-1 text-indigo-200 hover:text-white hover:bg-indigo-800/60 rounded"
-                                        title="Duplicar"
-                                      >
-                                        <Copy size={15} />
-                                      </button>
-                                      <button
-                                        onClick={e => { e.stopPropagation(); setEditSession(s); setWizardOpen(true) }}
-                                        className="p-1 text-indigo-200 hover:text-white hover:bg-indigo-800/60 rounded"
-                                        title="Editar"
-                                      >
-                                        <Pencil size={15} />
-                                      </button>
-                                      <button
-                                        onClick={e => { e.stopPropagation(); deleteSession(s.id) }}
-                                        className="p-1 text-indigo-200 hover:text-red-300 hover:bg-red-900/40 rounded"
-                                        title="Eliminar"
-                                      >
-                                        <Trash2 size={15} />
-                                      </button>
+                                      <Tooltip label="Duplicar">
+                                        <button
+                                          onClick={e => { e.stopPropagation(); addSession({ ...s, id: nanoid() }) }}
+                                          className="p-1 text-indigo-200 hover:text-white hover:bg-indigo-800/60 rounded"
+                                        >
+                                          <Copy size={15} />
+                                        </button>
+                                      </Tooltip>
+                                      <Tooltip label="Editar">
+                                        <button
+                                          onClick={e => { e.stopPropagation(); setEditSession(s); setWizardOpen(true) }}
+                                          className="p-1 text-indigo-200 hover:text-white hover:bg-indigo-800/60 rounded"
+                                        >
+                                          <Pencil size={15} />
+                                        </button>
+                                      </Tooltip>
+                                      <Tooltip label="Eliminar">
+                                        <button
+                                          onClick={e => { e.stopPropagation(); deleteSession(s.id) }}
+                                          className="p-1 text-indigo-200 hover:text-red-300 hover:bg-red-900/40 rounded"
+                                        >
+                                          <Trash2 size={15} />
+                                        </button>
+                                      </Tooltip>
                                     </div>
                                   </div>
                                 </div>
