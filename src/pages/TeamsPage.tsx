@@ -224,10 +224,10 @@ function TeamCard({ team, coaches, onEdit, onDelete, onDuplicate }: {
           <p className="text-xs text-gray-500 truncate">{assignedCoaches.map(c => c.name).join(', ')}</p>
         )}
       </div>
-      <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-        <button onClick={() => onEdit(team)} className="p-1 text-gray-500 hover:text-white" title="Editar"><Pencil size={12} /></button>
-        <button onClick={onDuplicate} className="p-1 text-gray-500 hover:text-white" title="Duplicar"><Copy size={12} /></button>
-        <button onClick={() => onDelete(team.id)} className="p-1 text-gray-500 hover:text-red-400" title="Eliminar"><Trash2 size={12} /></button>
+      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+        <button onClick={() => onEdit(team)} className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg" title="Editar"><Pencil size={15} /></button>
+        <button onClick={onDuplicate} className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg" title="Duplicar"><Copy size={15} /></button>
+        <button onClick={() => onDelete(team.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg" title="Eliminar"><Trash2 size={15} /></button>
       </div>
     </div>
   )

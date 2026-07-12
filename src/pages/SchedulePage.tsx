@@ -270,40 +270,41 @@ export default function SchedulePage() {
                     ? 'Asigna un entrenador al equipo para poder arrastrar'
                     : allPlaced
                       ? 'Todas las sesiones ya están asignadas'
-                      : `Arrastra para crear una sesión de ${team.name}`
-                  return (
-                    <Tooltip key={team.id} label={tip}>
-                      <div
-                        draggable={!disabled}
-                        onDragStart={e => {
-                          if (disabled) { e.preventDefault(); return }
-                          dragNewTeamId.current = team.id
-                          e.dataTransfer.effectAllowed = 'copy'
-                        }}
-                        onDragEnd={() => { dragNewTeamId.current = null; setDragOverTarget(null) }}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm select-none transition-colors ${
-                          disabled
-                            ? 'border-gray-800 bg-gray-900 text-gray-600 cursor-not-allowed opacity-60'
-                            : 'border-gray-700 bg-gray-800/60 hover:border-indigo-500 hover:bg-indigo-900/20 text-gray-100 cursor-grab active:cursor-grabbing'
-                        }`}
-                      >
-                        <GripVertical size={12} className={`shrink-0 ${disabled ? 'text-gray-700' : 'text-gray-500'}`} />
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${TEAM_GENDER_BADGE[team.gender ?? 'M']} ${disabled ? 'opacity-60' : ''}`}>
-                          {team.gender ?? 'M'}
-                        </span>
-                        <span className="font-medium truncate max-w-[160px]">{team.name}</span>
-                        <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded shrink-0 tabular-nums ${
-                          allPlaced
-                            ? 'bg-emerald-900/40 text-emerald-400'
-                            : remaining === target
-                              ? 'bg-amber-900/40 text-amber-300'
-                              : 'bg-indigo-900/40 text-indigo-300'
-                        }`}>
-                          {remaining}/{target}
-                        </span>
-                      </div>
-                    </Tooltip>
+                      : null
+                  const card = (
+                    <div
+                      draggable={!disabled}
+                      onDragStart={e => {
+                        if (disabled) { e.preventDefault(); return }
+                        dragNewTeamId.current = team.id
+                        e.dataTransfer.effectAllowed = 'copy'
+                      }}
+                      onDragEnd={() => { dragNewTeamId.current = null; setDragOverTarget(null) }}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm select-none transition-colors ${
+                        disabled
+                          ? 'border-gray-800 bg-gray-900 text-gray-600 cursor-not-allowed opacity-60'
+                          : 'border-gray-700 bg-gray-800/60 hover:border-indigo-500 hover:bg-indigo-900/20 text-gray-100 cursor-grab active:cursor-grabbing'
+                      }`}
+                    >
+                      <GripVertical size={12} className={`shrink-0 ${disabled ? 'text-gray-700' : 'text-gray-500'}`} />
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${TEAM_GENDER_BADGE[team.gender ?? 'M']} ${disabled ? 'opacity-60' : ''}`}>
+                        {team.gender ?? 'M'}
+                      </span>
+                      <span className="font-medium truncate max-w-[160px]">{team.name}</span>
+                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded shrink-0 tabular-nums ${
+                        allPlaced
+                          ? 'bg-emerald-900/40 text-emerald-400'
+                          : remaining === target
+                            ? 'bg-amber-900/40 text-amber-300'
+                            : 'bg-indigo-900/40 text-indigo-300'
+                      }`}>
+                        {remaining}/{target}
+                      </span>
+                    </div>
                   )
+                  return tip
+                    ? <Tooltip key={team.id} label={tip}>{card}</Tooltip>
+                    : <span key={team.id}>{card}</span>
                 })}
               </div>
             )}

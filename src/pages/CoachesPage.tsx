@@ -91,15 +91,15 @@ export default function CoachesPage() {
                   </div>
                 )}
               </div>
-              <div className="flex gap-1 shrink-0">
-                <button onClick={() => setDetailCoach(c)} className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg" title="Ver detalle">
-                  <Eye size={14} />
+              <div className="flex gap-2 shrink-0">
+                <button onClick={() => setDetailCoach(c)} className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg" title="Ver detalle">
+                  <Eye size={15} />
                 </button>
-                <button onClick={() => openEdit(c)} className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg" title="Editar">
-                  <Pencil size={14} />
+                <button onClick={() => openEdit(c)} className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg" title="Editar">
+                  <Pencil size={15} />
                 </button>
-                <button onClick={() => deleteCoach(c.id)} className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg" title="Eliminar">
-                  <Trash2 size={14} />
+                <button onClick={() => deleteCoach(c.id)} className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg" title="Eliminar">
+                  <Trash2 size={15} />
                 </button>
               </div>
             </div>
