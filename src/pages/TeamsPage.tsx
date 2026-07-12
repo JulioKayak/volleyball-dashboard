@@ -3,6 +3,7 @@ import { useStore } from '../store'
 import type { Coach, Gender, Team } from '../types'
 import { Plus, Pencil, Trash2, X, Check, Copy } from 'lucide-react'
 import { nanoid } from '../utils/id'
+import { useEscape } from '../utils/useEscape'
 import MultiSelect from '../components/MultiSelect'
 
 const CATEGORIES = [
@@ -24,6 +25,8 @@ export default function TeamsPage() {
   const [formCoachIds, setFormCoachIds] = useState<string[]>([])
   const [isNew, setIsNew] = useState(false)
   const [filterGender, setFilterGender] = useState<Gender | 'all'>('all')
+
+  useEscape(() => setForm(null))
 
   function openNew() { setForm(empty()); setFormCoachIds([]); setIsNew(true) }
   function openEdit(t: Team) {

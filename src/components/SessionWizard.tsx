@@ -4,6 +4,7 @@ import type { Day, Session } from '../types'
 import { WORK_DAYS, DAY_LABELS } from '../types'
 import { checkConflicts } from '../utils/conflicts'
 import { nanoid } from '../utils/id'
+import { useEscape } from '../utils/useEscape'
 import { X, AlertTriangle, CheckCircle2 } from 'lucide-react'
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function SessionWizard({ initial, onClose, editId }: Props) {
+  useEscape(onClose)
   const { pavilions, teams, coaches, sessions, addSession, updateSession } = useStore()
 
   const [day, setDay] = useState<Day>(initial?.day ?? 'mon')

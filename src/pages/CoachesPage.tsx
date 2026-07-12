@@ -4,6 +4,7 @@ import type { Coach, Team } from '../types'
 import { WORK_DAYS, DAY_LABELS, defaultAvailability } from '../types'
 import { Plus, Pencil, Trash2, X, Check, Volleyball, Eye } from 'lucide-react'
 import { nanoid } from '../utils/id'
+import { useEscape } from '../utils/useEscape'
 import AvailabilityEditor from '../components/AvailabilityEditor'
 import MultiSelect from '../components/MultiSelect'
 
@@ -18,6 +19,8 @@ export default function CoachesPage() {
   const [form, setForm] = useState<Coach | null>(null)
   const [isNew, setIsNew] = useState(false)
   const [detailCoach, setDetailCoach] = useState<Coach | null>(null)
+
+  useEscape(() => { setForm(null); setDetailCoach(null) })
 
   function openNew() { setForm(emptyCoach()); setIsNew(true) }
   function openEdit(c: Coach) { setForm(JSON.parse(JSON.stringify(c))); setIsNew(false) }

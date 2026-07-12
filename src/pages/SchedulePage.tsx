@@ -15,6 +15,7 @@ import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn, ChevronRigh
 import SessionWizard from '../components/SessionWizard'
 import { checkConflicts } from '../utils/conflicts'
 import { nanoid } from '../utils/id'
+import { useEscape } from '../utils/useEscape'
 
 const DEFAULT_NEW_SESSION_MINUTES = 90
 const TEAM_GENDER_BADGE: Record<'M' | 'F', string> = {
@@ -66,6 +67,8 @@ export default function SchedulePage() {
   const [remainingOpen, setRemainingOpen] = useState(false)
   const [collapsedPavs, setCollapsedPavs] = useState<Set<string>>(new Set())
   const [errorPopup, setErrorPopup] = useState<{ session: Session; messages: string[] } | null>(null)
+
+  useEscape(() => setErrorPopup(null))
 
   function pavKey(pavId: string, day: Day) { return `${pavId}-${day}` }
   function togglePavCollapse(pavId: string) {

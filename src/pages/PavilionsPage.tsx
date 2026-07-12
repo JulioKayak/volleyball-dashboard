@@ -4,6 +4,7 @@ import type { Pavilion } from '../types'
 import { defaultAvailability } from '../types'
 import { Plus, Pencil, Trash2, X, Check, Copy } from 'lucide-react'
 import { nanoid } from '../utils/id'
+import { useEscape } from '../utils/useEscape'
 import AvailabilityEditor from '../components/AvailabilityEditor'
 
 const COLORS = [
@@ -22,6 +23,8 @@ export default function PavilionsPage() {
   const { pavilions, addPavilion, updatePavilion, deletePavilion } = useStore()
   const [form, setForm] = useState<Pavilion | null>(null)
   const [isNew, setIsNew] = useState(false)
+
+  useEscape(() => setForm(null))
 
   function openNew() {
     setForm({ ...empty(), color: COLORS[pavilions.length % COLORS.length] })

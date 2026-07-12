@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Paletas de color — Volleyball Dashboard</title>
+<style>
+  :root {
+    --page-bg: #0b0d12;
+    --page-text: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--page-bg);
+    color: var(--page-text);
+    padding: 32px 20px 80px;
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  p.sub { color: #9ca3af; margin-top: 0; margin-bottom: 32px; }
+  h2.palette-title {
+    font-size: 18px;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #22c55e;
+    color: #04120a;
+  }
+  .palette-desc { color: #9ca3af; font-size: 13px; margin: 0 0 16px; }
+
+  section.palette {
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 40px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .row { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 16px; }
+  .col { flex: 1 1 260px; }
+  .col h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 10px; opacity: .7; }
+
+  /* swatches */
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .swatch {
+    width: 64px;
+    text-align: center;
+    font-size: 10px;
+  }
+  .swatch .chip {
+    width: 64px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    margin-bottom: 4px;
+  }
+
+  /* buttons */
+  .btn {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin: 0 8px 8px 0;
+    transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s;
+  }
+  .btn-group { display: flex; flex-wrap: wrap; }
+
+  /* card */
+  .card {
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card h4 { margin: 0 0 6px; font-size: 14px; }
+  .card p { margin: 0 0 10px; font-size: 12px; }
+  .card a { font-size: 12px; text-decoration: none; font-weight: 600; }
+
+  /* nav sample */
+  .nav {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+  .nav .item {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Paletas de color</h1>
+<p class="sub">Comparativa de fondos, botones (normal/hover), primary/secondary/danger y tarjetas. Colores en hex de Tailwind, listos para copiar.</p>
+
+<!-- ============ PALETTE 1: ACTUAL (INDIGO DARK) ============ -->
+<section class="palette" style="background:#111827;">
+  <h2 class="palette-title" style="color:#f9fafb;">Indigo Dark <span class="badge">Implementada</span></h2>
+  <p class="palette-desc" style="color:#9ca3af;">La que ya usa la app: fondo gray-900/800, primary indigo-600, acentos por rol (red/amber/rose/blue/emerald).</p>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#9ca3af;">Swatches</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background:#111827;"></div>gray-900</div>
+        <div class="swatch"><div class="chip" style="background:#1f2937;"></div>gray-800</div>
+        <div class="swatch"><div class="chip" style="background:#374151;"></div>gray-700</div>
+        <div class="swatch"><div class="chip" style="background:#4f46e5;"></div>indigo-600</div>
+        <div class="swatch"><div class="chip" style="background:#6366f1;"></div>indigo-500</div>
+        <div class="swatch"><div class="chip" style="background:#dc2626;"></div>red-600</div>
+        <div class="swatch"><div class="chip" style="background:#78350f;"></div>amber-900</div>
+        <div class="swatch"><div class="chip" style="background:#059669;"></div>emerald-600</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#9ca3af;">Botones</h3>
+      <div class="btn-group">
+        <button class="btn" style="background:#4f46e5;color:#fff;" onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">Primary</button>
+        <button class="btn" style="background:#374151;color:#e5e7eb;" onmouseover="this.style.background='#4b5563'" onmouseout="this.style.background='#374151'">Secondary</button>
+        <button class="btn" style="background:#dc2626;color:#fff;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">Danger</button>
+        <button class="btn" style="background:transparent;color:#818cf8;border:1px solid #4f46e5;" onmouseover="this.style.background='#4f46e520'" onmouseout="this.style.background='transparent'">Ghost</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#9ca3af;">Card</h3>
+      <div class="card" style="background:#1f2937;border-color:#374151;">
+        <h4 style="color:#f9fafb;">Equipo Sub-16</h4>
+        <p style="color:#9ca3af;">3 sesiones / semana</p>
+        <a href="#" style="color:#818cf8;">Ver horario →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#9ca3af;">Nav</h3>
+      <div class="nav" style="background:#1f2937;">
+        <div class="item" style="background:#4f46e5;color:#fff;">Horario</div>
+        <div class="item" style="color:#9ca3af;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">Equipos</div>
+        <div class="item" style="color:#9ca3af;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">Pabellones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PALETTE 2: VOLLEYBALL ORANGE/NAVY ============ -->
+<section class="palette" style="background:#0f172a;">
+  <h2 class="palette-title" style="color:#f8fafc;">Navy & Orange</h2>
+  <p class="palette-desc" style="color:#94a3b8;">Temática deportiva: fondo slate-900, primary naranja cancha, secundarios slate.</p>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#94a3b8;">Swatches</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background:#0f172a;"></div>slate-900</div>
+        <div class="swatch"><div class="chip" style="background:#1e293b;"></div>slate-800</div>
+        <div class="swatch"><div class="chip" style="background:#334155;"></div>slate-700</div>
+        <div class="swatch"><div class="chip" style="background:#f97316;"></div>orange-500</div>
+        <div class="swatch"><div class="chip" style="background:#fb923c;"></div>orange-400</div>
+        <div class="swatch"><div class="chip" style="background:#dc2626;"></div>red-600</div>
+        <div class="swatch"><div class="chip" style="background:#eab308;"></div>yellow-500</div>
+        <div class="swatch"><div class="chip" style="background:#22c55e;"></div>green-500</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#94a3b8;">Botones</h3>
+      <div class="btn-group">
+        <button class="btn" style="background:#f97316;color:#1c0a00;" onmouseover="this.style.background='#ea580c'" onmouseout="this.style.background='#f97316'">Primary</button>
+        <button class="btn" style="background:#334155;color:#e2e8f0;" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">Secondary</button>
+        <button class="btn" style="background:#dc2626;color:#fff;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">Danger</button>
+        <button class="btn" style="background:transparent;color:#fb923c;border:1px solid #f97316;" onmouseover="this.style.background='#f9731620'" onmouseout="this.style.background='transparent'">Ghost</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#94a3b8;">Card</h3>
+      <div class="card" style="background:#1e293b;border-color:#334155;">
+        <h4 style="color:#f8fafc;">Equipo Sub-16</h4>
+        <p style="color:#94a3b8;">3 sesiones / semana</p>
+        <a href="#" style="color:#fb923c;">Ver horario →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#94a3b8;">Nav</h3>
+      <div class="nav" style="background:#1e293b;">
+        <div class="item" style="background:#f97316;color:#1c0a00;">Horario</div>
+        <div class="item" style="color:#94a3b8;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='transparent'">Equipos</div>
+        <div class="item" style="color:#94a3b8;" onmouseover="this.style.background='#334155'" onmouseout="this.style.background='transparent'">Pabellones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PALETTE 3: TEAL/EMERALD DARK ============ -->
+<section class="palette" style="background:#0f1a17;">
+  <h2 class="palette-title" style="color:#ecfdf5;">Teal Dark</h2>
+  <p class="palette-desc" style="color:#94a3b8;">Fondo verde-negro neutro, primary teal, buen contraste para estados "ok/disponible".</p>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#94a3b8;">Swatches</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background:#0f1a17;"></div>base</div>
+        <div class="swatch"><div class="chip" style="background:#1c2b27;"></div>surface</div>
+        <div class="swatch"><div class="chip" style="background:#2d403a;"></div>border</div>
+        <div class="swatch"><div class="chip" style="background:#0d9488;"></div>teal-600</div>
+        <div class="swatch"><div class="chip" style="background:#14b8a6;"></div>teal-500</div>
+        <div class="swatch"><div class="chip" style="background:#ef4444;"></div>red-500</div>
+        <div class="swatch"><div class="chip" style="background:#f59e0b;"></div>amber-500</div>
+        <div class="swatch"><div class="chip" style="background:#38bdf8;"></div>sky-400</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#94a3b8;">Botones</h3>
+      <div class="btn-group">
+        <button class="btn" style="background:#0d9488;color:#f0fdfa;" onmouseover="this.style.background='#0f766e'" onmouseout="this.style.background='#0d9488'">Primary</button>
+        <button class="btn" style="background:#2d403a;color:#d1fae5;" onmouseover="this.style.background='#3a534c'" onmouseout="this.style.background='#2d403a'">Secondary</button>
+        <button class="btn" style="background:#ef4444;color:#fff;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Danger</button>
+        <button class="btn" style="background:transparent;color:#5eead4;border:1px solid #0d9488;" onmouseover="this.style.background='#0d948820'" onmouseout="this.style.background='transparent'">Ghost</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#94a3b8;">Card</h3>
+      <div class="card" style="background:#1c2b27;border-color:#2d403a;">
+        <h4 style="color:#ecfdf5;">Equipo Sub-16</h4>
+        <p style="color:#9cc9bd;">3 sesiones / semana</p>
+        <a href="#" style="color:#5eead4;">Ver horario →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#94a3b8;">Nav</h3>
+      <div class="nav" style="background:#1c2b27;">
+        <div class="item" style="background:#0d9488;color:#f0fdfa;">Horario</div>
+        <div class="item" style="color:#9cc9bd;" onmouseover="this.style.background='#2d403a'" onmouseout="this.style.background='transparent'">Equipos</div>
+        <div class="item" style="color:#9cc9bd;" onmouseover="this.style.background='#2d403a'" onmouseout="this.style.background='transparent'">Pabellones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PALETTE 4: VIOLET/ZINC DARK ============ -->
+<section class="palette" style="background:#18181b;">
+  <h2 class="palette-title" style="color:#fafafa;">Violet & Zinc</h2>
+  <p class="palette-desc" style="color:#a1a1aa;">Fondo zinc neutro, primary violeta, más "premium/software" que deportivo.</p>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#a1a1aa;">Swatches</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background:#18181b;"></div>zinc-900</div>
+        <div class="swatch"><div class="chip" style="background:#27272a;"></div>zinc-800</div>
+        <div class="swatch"><div class="chip" style="background:#3f3f46;"></div>zinc-700</div>
+        <div class="swatch"><div class="chip" style="background:#7c3aed;"></div>violet-600</div>
+        <div class="swatch"><div class="chip" style="background:#8b5cf6;"></div>violet-500</div>
+        <div class="swatch"><div class="chip" style="background:#f43f5e;"></div>rose-500</div>
+        <div class="swatch"><div class="chip" style="background:#f59e0b;"></div>amber-500</div>
+        <div class="swatch"><div class="chip" style="background:#10b981;"></div>emerald-500</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#a1a1aa;">Botones</h3>
+      <div class="btn-group">
+        <button class="btn" style="background:#7c3aed;color:#fff;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">Primary</button>
+        <button class="btn" style="background:#3f3f46;color:#e4e4e7;" onmouseover="this.style.background='#52525b'" onmouseout="this.style.background='#3f3f46'">Secondary</button>
+        <button class="btn" style="background:#f43f5e;color:#fff;" onmouseover="this.style.background='#e11d48'" onmouseout="this.style.background='#f43f5e'">Danger</button>
+        <button class="btn" style="background:transparent;color:#a78bfa;border:1px solid #7c3aed;" onmouseover="this.style.background='#7c3aed20'" onmouseout="this.style.background='transparent'">Ghost</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#a1a1aa;">Card</h3>
+      <div class="card" style="background:#27272a;border-color:#3f3f46;">
+        <h4 style="color:#fafafa;">Equipo Sub-16</h4>
+        <p style="color:#a1a1aa;">3 sesiones / semana</p>
+        <a href="#" style="color:#a78bfa;">Ver horario →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#a1a1aa;">Nav</h3>
+      <div class="nav" style="background:#27272a;">
+        <div class="item" style="background:#7c3aed;color:#fff;">Horario</div>
+        <div class="item" style="color:#a1a1aa;" onmouseover="this.style.background='#3f3f46'" onmouseout="this.style.background='transparent'">Equipos</div>
+        <div class="item" style="color:#a1a1aa;" onmouseover="this.style.background='#3f3f46'" onmouseout="this.style.background='transparent'">Pabellones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PALETTE 5: WARM AMBER/STONE DARK ============ -->
+<section class="palette" style="background:#1c1917;">
+  <h2 class="palette-title" style="color:#fafaf9;">Warm Amber</h2>
+  <p class="palette-desc" style="color:#a8a29e;">Fondo stone cálido, primary ámbar (parquet de cancha), buen contraste con negro.</p>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#a8a29e;">Swatches</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background:#1c1917;"></div>stone-900</div>
+        <div class="swatch"><div class="chip" style="background:#292524;"></div>stone-800</div>
+        <div class="swatch"><div class="chip" style="background:#44403c;"></div>stone-700</div>
+        <div class="swatch"><div class="chip" style="background:#f59e0b;"></div>amber-500</div>
+        <div class="swatch"><div class="chip" style="background:#fbbf24;"></div>amber-400</div>
+        <div class="swatch"><div class="chip" style="background:#e11d48;"></div>rose-600</div>
+        <div class="swatch"><div class="chip" style="background:#65a30d;"></div>lime-600</div>
+        <div class="swatch"><div class="chip" style="background:#0891b2;"></div>cyan-600</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#a8a29e;">Botones</h3>
+      <div class="btn-group">
+        <button class="btn" style="background:#f59e0b;color:#1c0f02;" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">Primary</button>
+        <button class="btn" style="background:#44403c;color:#e7e5e4;" onmouseover="this.style.background='#57534e'" onmouseout="this.style.background='#44403c'">Secondary</button>
+        <button class="btn" style="background:#e11d48;color:#fff;" onmouseover="this.style.background='#be123c'" onmouseout="this.style.background='#e11d48'">Danger</button>
+        <button class="btn" style="background:transparent;color:#fbbf24;border:1px solid #f59e0b;" onmouseover="this.style.background='#f59e0b20'" onmouseout="this.style.background='transparent'">Ghost</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#a8a29e;">Card</h3>
+      <div class="card" style="background:#292524;border-color:#44403c;">
+        <h4 style="color:#fafaf9;">Equipo Sub-16</h4>
+        <p style="color:#a8a29e;">3 sesiones / semana</p>
+        <a href="#" style="color:#fbbf24;">Ver horario →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#a8a29e;">Nav</h3>
+      <div class="nav" style="background:#292524;">
+        <div class="item" style="background:#f59e0b;color:#1c0f02;">Horario</div>
+        <div class="item" style="color:#a8a29e;" onmouseover="this.style.background='#44403c'" onmouseout="this.style.background='transparent'">Equipos</div>
+        <div class="item" style="color:#a8a29e;" onmouseover="this.style.background='#44403c'" onmouseout="this.style.background='transparent'">Pabellones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PALETTE 6: LIGHT MODE BLUE ============ -->
+<section class="palette" style="background:#f8fafc;border:1px solid #e2e8f0;">
+  <h2 class="palette-title" style="color:#0f172a;">Light Blue</h2>
+  <p class="palette-desc" style="color:#64748b;">Opción modo claro: fondo slate-50, primary azul, para quien prefiera tema día.</p>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#64748b;">Swatches</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background:#f8fafc;"></div>slate-50</div>
+        <div class="swatch"><div class="chip" style="background:#e2e8f0;"></div>slate-200</div>
+        <div class="swatch"><div class="chip" style="background:#cbd5e1;"></div>slate-300</div>
+        <div class="swatch"><div class="chip" style="background:#2563eb;"></div>blue-600</div>
+        <div class="swatch"><div class="chip" style="background:#3b82f6;"></div>blue-500</div>
+        <div class="swatch"><div class="chip" style="background:#dc2626;"></div>red-600</div>
+        <div class="swatch"><div class="chip" style="background:#d97706;"></div>amber-600</div>
+        <div class="swatch"><div class="chip" style="background:#16a34a;"></div>green-600</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#64748b;">Botones</h3>
+      <div class="btn-group">
+        <button class="btn" style="background:#2563eb;color:#fff;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">Primary</button>
+        <button class="btn" style="background:#e2e8f0;color:#0f172a;" onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">Secondary</button>
+        <button class="btn" style="background:#dc2626;color:#fff;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">Danger</button>
+        <button class="btn" style="background:transparent;color:#2563eb;border:1px solid #2563eb;" onmouseover="this.style.background='#2563eb15'" onmouseout="this.style.background='transparent'">Ghost</button>
+      </div>
+    </div>
+
+    <div class="col">
+      <h3 style="color:#64748b;">Card</h3>
+      <div class="card" style="background:#ffffff;border-color:#e2e8f0;">
+        <h4 style="color:#0f172a;">Equipo Sub-16</h4>
+        <p style="color:#64748b;">3 sesiones / semana</p>
+        <a href="#" style="color:#2563eb;">Ver horario →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h3 style="color:#64748b;">Nav</h3>
+      <div class="nav" style="background:#ffffff;border:1px solid #e2e8f0;">
+        <div class="item" style="background:#2563eb;color:#fff;">Horario</div>
+        <div class="item" style="color:#475569;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='transparent'">Equipos</div>
+        <div class="item" style="color:#475569;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='transparent'">Pabellones</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
