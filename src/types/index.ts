@@ -62,8 +62,6 @@ export interface Session {
   endTime: string
 }
 
-export type Page = 'schedule' | 'pavilions' | 'teams' | 'coaches' | 'export'
-
 export function defaultAvailability(): WeeklyAvailability {
   const result = {} as WeeklyAvailability
   for (const d of ALL_DAYS) result[d] = { available: false, slots: [] }

@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
-import type { Page } from './types'
 import SchedulePage from './pages/SchedulePage'
 import PavilionsPage from './pages/PavilionsPage'
 import TeamsPage from './pages/TeamsPage'
@@ -8,15 +7,19 @@ import CoachesPage from './pages/CoachesPage'
 import ExportPage from './pages/ExportPage'
 
 export default function App() {
-  const [page, setPage] = useState<Page>('schedule')
-
   return (
-    <Layout page={page} onNav={setPage}>
-      {page === 'schedule' && <SchedulePage />}
-      {page === 'pavilions' && <PavilionsPage />}
-      {page === 'teams' && <TeamsPage />}
-      {page === 'coaches' && <CoachesPage />}
-      {page === 'export' && <ExportPage />}
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Navigate to="/schedule" replace />} />
+        <Route path="/home" element={<Navigate to="/schedule" replace />} />
+        <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/schedule/:day" element={<SchedulePage />} />
+        <Route path="/pavillions" element={<PavilionsPage />} />
+        <Route path="/teams" element={<TeamsPage />} />
+        <Route path="/trainers" element={<CoachesPage />} />
+        <Route path="/config" element={<ExportPage />} />
+        <Route path="*" element={<Navigate to="/schedule" replace />} />
+      </Routes>
     </Layout>
   )
 }

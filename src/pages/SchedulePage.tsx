@@ -1,7 +1,16 @@
 import { useMemo, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../store'
 import type { Day, Pavilion, Session } from '../types'
 import { WORK_DAYS, DAY_LABELS } from '../types'
+
+const DAY_SLUGS: Record<Day, string> = {
+  mon: 'monday', tue: 'tuesday', wed: 'wednesday', thu: 'thursday',
+  fri: 'friday', sat: 'saturday', sun: 'sunday',
+}
+const SLUG_TO_DAY: Record<string, Day> = Object.fromEntries(
+  Object.entries(DAY_SLUGS).map(([d, s]) => [s, d as Day])
+) as Record<string, Day>
 import { Plus, Pencil, Trash2, Copy, AlertTriangle, ZoomOut, ZoomIn, ChevronRight, GripVertical, X, ChevronDown, ChevronUp } from 'lucide-react'
 import SessionWizard from '../components/SessionWizard'
 import { checkConflicts } from '../utils/conflicts'
@@ -41,9 +50,12 @@ function timeToFraction(t: string, hourStart: number, totalHours: number): numbe
 
 export default function SchedulePage() {
   const { pavilions, teams, coaches, sessions, addSession, deleteSession, updateSession } = useStore()
+  const navigate = useNavigate()
+  const { day: daySlug } = useParams()
+  const selectedDay: Day = (daySlug && SLUG_TO_DAY[daySlug]) || 'mon'
+  const setSelectedDay = (d: Day) => navigate(`/schedule/${DAY_SLUGS[d]}`)
   const [wizardOpen, setWizardOpen] = useState(false)
   const [editSession, setEditSession] = useState<Session | null>(null)
-  const [selectedDay, setSelectedDay] = useState<Day>('mon')
   const [zoomIdx, setZoomIdx] = useState(1)
 
   const pxPerHour = ZOOM_LEVELS[zoomIdx]
