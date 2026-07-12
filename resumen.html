@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Voleibol Dashboard — Resumen</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --panel: #111118;
+    --panel-2: #17171f;
+    --border: #262633;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --dim: #6b7280;
+    --indigo: #6366f1;
+    --indigo-2: #818cf8;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --emerald: #10b981;
+    --rose: #f43f5e;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 24px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 32px;
+    letter-spacing: -0.02em;
+  }
+  header p { color: var(--muted); margin: 0; }
+  h2 {
+    margin: 40px 0 12px;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    border-left: 4px solid var(--indigo);
+    padding-left: 12px;
+  }
+  h3 {
+    margin: 24px 0 8px;
+    font-size: 16px;
+    color: var(--indigo-2);
+  }
+  p, li { color: var(--text); }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  pre code { background: transparent; border: none; padding: 0; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 12px 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .grid .card { margin: 0; }
+  .card h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .tag.indigo { color: #c7d2fe; background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.35); }
+  .tag.amber { color: #fcd34d; background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.35); }
+  .tag.red { color: #fca5a5; background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.35); }
+  .tag.emerald { color: #6ee7b7; background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.35); }
+  .tag.blue { color: #93c5fd; background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.35); }
+  .tag.rose { color: #fda4af; background: rgba(244,63,94,0.12); border-color: rgba(244,63,94,0.35); }
+  ul { padding-left: 22px; }
+  ul li { margin: 4px 0; }
+  .kv {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 6px 16px;
+    margin: 8px 0;
+    font-size: 14px;
+  }
+  .kv .k { color: var(--muted); }
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+  }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc a { color: var(--indigo-2); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .keyword { color: #c084fc; }
+  .type { color: #7dd3fc; }
+  .str { color: #86efac; }
+  .comment { color: #6b7280; font-style: italic; }
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--dim);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Voleibol Dashboard</h1>
+  <p>Gestor de horarios de entrenamiento para un club de voleibol — pabellones, equipos, entrenadores y sesiones semanales.</p>
+</header>
+
+<div class="toc">
+  <strong>Contenido</strong>
+  <ol>
+    <li><a href="#stack">Stack técnico</a></li>
+    <li><a href="#estructura">Estructura del proyecto</a></li>
+    <li><a href="#tipos">Tipos principales</a></li>
+    <li><a href="#store">Store (persistencia)</a></li>
+    <li><a href="#secciones">Secciones de la app</a></li>
+    <li><a href="#componentes">Componentes clave</a></li>
+    <li><a href="#conflictos">Motor de conflictos</a></li>
+    <li><a href="#flujo">Flujo típico de uso</a></li>
+  </ol>
+</div>
+
+<h2 id="stack">1. Stack técnico</h2>
+<div class="grid">
+  <div class="card">
+    <h4>React 19 + TypeScript</h4>
+    <p>Frontend SPA. Tipado estricto.</p>
+  </div>
+  <div class="card">
+    <h4>Vite 8</h4>
+    <p>Bundler y dev server.</p>
+  </div>
+  <div class="card">
+    <h4>Tailwind CSS v4</h4>
+    <p>Estilado utility-first, tema oscuro.</p>
+  </div>
+  <div class="card">
+    <h4>Zustand + persist</h4>
+    <p>Store global sincronizado con <code>localStorage</code>.</p>
+  </div>
+  <div class="card">
+    <h4>lucide-react</h4>
+    <p>Set de iconos.</p>
+  </div>
+</div>
+
+<h2 id="estructura">2. Estructura del proyecto</h2>
+<pre><code>src/
+├── App.tsx              <span class="comment">// Router simple por estado (Page)</span>
+├── main.tsx
+├── components/
+│   ├── Layout.tsx           <span class="comment">// Sidebar + main</span>
+│   ├── SessionWizard.tsx    <span class="comment">// Modal crear/editar sesión</span>
+│   ├── AvailabilityEditor.tsx <span class="comment">// Editor de franjas horarias</span>
+│   ├── MultiSelect.tsx      <span class="comment">// Chips multiselección</span>
+│   └── defaults.ts
+├── pages/
+│   ├── SchedulePage.tsx     <span class="comment">// Horario semanal (drag & drop)</span>
+│   ├── PavilionsPage.tsx    <span class="comment">// CRUD pabellones</span>
+│   ├── TeamsPage.tsx        <span class="comment">// CRUD equipos</span>
+│   ├── CoachesPage.tsx      <span class="comment">// CRUD entrenadores</span>
+│   └── ExportPage.tsx       <span class="comment">// Import / export JSON</span>
+├── store/index.ts       <span class="comment">// Zustand con persist</span>
+├── types/index.ts       <span class="comment">// Tipos + constantes</span>
+└── utils/
+    ├── conflicts.ts     <span class="comment">// Detección de solapamientos</span>
+    └── id.ts            <span class="comment">// nanoid</span></code></pre>
+
+<h2 id="tipos">3. Tipos principales</h2>
+
+<h3>Días y géneros</h3>
+<pre><code><span class="keyword">export type</span> <span class="type">Day</span> = <span class="str">'mon'</span> | <span class="str">'tue'</span> | <span class="str">'wed'</span> | <span class="str">'thu'</span> | <span class="str">'fri'</span> | <span class="str">'sat'</span> | <span class="str">'sun'</span>
+<span class="keyword">export type</span> <span class="type">Gender</span> = <span class="str">'M'</span> | <span class="str">'F'</span>
+
+<span class="keyword">export const</span> WORK_DAYS: <span class="type">Day</span>[] = [<span class="str">'mon'</span>, <span class="str">'tue'</span>, <span class="str">'wed'</span>, <span class="str">'thu'</span>, <span class="str">'fri'</span>]</code></pre>
+
+<h3>Disponibilidad semanal</h3>
+<pre><code><span class="keyword">interface</span> <span class="type">TimeSlot</span>          { start: <span class="type">string</span>; end: <span class="type">string</span> }   <span class="comment">// "HH:MM"</span>
+<span class="keyword">interface</span> <span class="type">DayAvailability</span>   { available: <span class="type">boolean</span>; slots: <span class="type">TimeSlot</span>[] }
+<span class="keyword">type</span> <span class="type">WeeklyAvailability</span> = <span class="type">Record</span>&lt;<span class="type">Day</span>, <span class="type">DayAvailability</span>&gt;</code></pre>
+
+<h3>Pabellón</h3>
+<pre><code><span class="keyword">interface</span> <span class="type">Pavilion</span> {
+  id: <span class="type">string</span>
+  name: <span class="type">string</span>
+  maxCourts: <span class="type">number</span>              <span class="comment">// 1 | 2 | 3</span>
+  color: <span class="type">string</span>                  <span class="comment">// hex</span>
+  availability: <span class="type">WeeklyAvailability</span>
+}</code></pre>
+
+<h3>Equipo</h3>
+<pre><code><span class="keyword">interface</span> <span class="type">Team</span> {
+  id: <span class="type">string</span>
+  name: <span class="type">string</span>
+  category: <span class="type">string</span>               <span class="comment">// Escuelas, Benjamín, ... Senior</span>
+  gender: <span class="type">Gender</span>
+  sessionsPerWeek?: <span class="type">number</span>       <span class="comment">// nº de entrenos semanales (default 3)</span>
+}</code></pre>
+
+<h3>Entrenador</h3>
+<pre><code><span class="keyword">interface</span> <span class="type">Coach</span> {
+  id: <span class="type">string</span>
+  name: <span class="type">string</span>
+  teamIds: <span class="type">string</span>[]              <span class="comment">// equipos que entrena</span>
+  canDoubleCoach: <span class="type">boolean</span>        <span class="comment">// puede llevar 2 equipos a la vez</span>
+  availability: <span class="type">WeeklyAvailability</span>
+  playerTeamId?: <span class="type">string</span>          <span class="comment">// si también es jugador/a</span>
+}</code></pre>
+
+<h3>Sesión de entrenamiento</h3>
+<pre><code><span class="keyword">interface</span> <span class="type">Session</span> {
+  id: <span class="type">string</span>
+  pavilionId: <span class="type">string</span>
+  courtNumber: <span class="type">number</span>
+  teamId: <span class="type">string</span>
+  coachId: <span class="type">string</span>
+  day: <span class="type">Day</span>
+  startTime: <span class="type">string</span>              <span class="comment">// "HH:MM"</span>
+  endTime: <span class="type">string</span>
+}</code></pre>
+
+<h2 id="store">4. Store (Zustand + persist)</h2>
+<p>Todo el estado vive en un único store persistido en <code>localStorage</code> bajo la clave <code>volleyball-dashboard</code>. No hay backend.</p>
+<div class="card">
+  <div class="kv">
+    <div class="k">Colecciones</div><div><code>pavilions</code>, <code>teams</code>, <code>coaches</code>, <code>sessions</code></div>
+    <div class="k">Acciones CRUD</div><div><code>add*</code>, <code>update*</code>, <code>delete*</code> por colección</div>
+    <div class="k">Import / Export</div><div><code>importData(data)</code> reemplaza todo el estado</div>
+  </div>
+</div>
+
+<h2 id="secciones">5. Secciones de la app</h2>
+
+<div class="card">
+  <h4>🗓️ Horario semanal <span class="tag indigo">SchedulePage</span></h4>
+  <p>Vista principal. Pestañas Lun–Vie, un panel por pabellón con columnas por pista y timeline vertical por horas.</p>
+  <ul>
+    <li>Drag & drop de sesiones entre pistas y horas.</li>
+    <li><strong>Sesiones restantes</strong>: sección colapsable con cards arrastrables (una por sesión pendiente según <code>sessionsPerWeek</code>); al soltar en una pista se crea la sesión (90 min por defecto).</li>
+    <li>Pabellones <strong>colapsables</strong> por día para ganar espacio visual.</li>
+    <li>Pabellones sin horario ese día quedan ocultos.</li>
+    <li>Sesiones en conflicto muestran un triángulo rojo; al pulsarlo se abre un <strong>popup</strong> con detalle del error.</li>
+    <li>Control de zoom (Compacto / Normal / Grande).</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h4>🏛️ Pabellones <span class="tag emerald">PavilionsPage</span></h4>
+  <p>CRUD de pabellones. Cada uno con nombre, nº de pistas (1–3), color y disponibilidad semanal por franjas.</p>
+</div>
+
+<div class="card">
+  <h4>👥 Equipos <span class="tag blue">TeamsPage</span></h4>
+  <p>Agrupados por categoría (Escuelas → Senior). Filtro por género (M/F). Cada equipo: nombre, categoría, género, sesiones/semana y entrenadores asignados.</p>
+</div>
+
+<div class="card">
+  <h4>🎯 Entrenadores <span class="tag amber">CoachesPage</span></h4>
+  <p>Nombre, disponibilidad semanal, equipos que entrena, flag "doble" (dos equipos a la vez) y opcional "también jugador/a" con equipo de juego.</p>
+</div>
+
+<div class="card">
+  <h4>📤 Configuración / Export <span class="tag rose">ExportPage</span></h4>
+  <p>Exportar el estado a JSON e importar desde JSON (reemplaza todo).</p>
+</div>
+
+<h2 id="componentes">6. Componentes clave</h2>
+<div class="grid">
+  <div class="card">
+    <h4>SessionWizard</h4>
+    <p>Modal para crear/editar una sesión. Selecciona día, horario, pabellón, pista, entrenador y equipo. Marca conflictos en tiempo real.</p>
+  </div>
+  <div class="card">
+    <h4>AvailabilityEditor</h4>
+    <p>Editor de <code>WeeklyAvailability</code>. Checkbox por día + franjas horarias añadibles/eliminables.</p>
+  </div>
+  <div class="card">
+    <h4>MultiSelect</h4>
+    <p>Selector multi-opción con chips y buscador de opciones. Cierra al hacer click fuera.</p>
+  </div>
+  <div class="card">
+    <h4>Layout</h4>
+    <p>Sidebar de navegación + contenedor principal.</p>
+  </div>
+</div>
+
+<h2 id="conflictos">7. Motor de conflictos (<code>utils/conflicts.ts</code>)</h2>
+<p>Cada sesión se valida contra el resto. <code>checkConflicts()</code> devuelve un <code>ConflictReport</code>:</p>
+<pre><code><span class="keyword">interface</span> <span class="type">ConflictReport</span> {
+  coachDoubleBooked: <span class="type">boolean</span>     <span class="comment">// entrenador con demasiados equipos a la vez</span>
+  courtOccupied: <span class="type">boolean</span>         <span class="comment">// pista ocupada por otra sesión</span>
+  coachUnavailable: <span class="type">boolean</span>      <span class="comment">// fuera de la disponibilidad del entrenador</span>
+  pavilionUnavailable: <span class="type">boolean</span>   <span class="comment">// fuera del horario del pabellón</span>
+  coachPlayerConflict: <span class="type">boolean</span>   <span class="comment">// entrena mientras juega como jugador</span>
+}</code></pre>
+<p>El límite de "doble booking" del entrenador se relaja a <strong>2 equipos</strong> si <code>canDoubleCoach</code>.</p>
+
+<h2 id="flujo">8. Flujo típico de uso</h2>
+<ol>
+  <li>Crear <strong>pabellones</strong> con su horario semanal y nº de pistas.</li>
+  <li>Crear <strong>equipos</strong> indicando categoría, género y sesiones/semana.</li>
+  <li>Crear <strong>entrenadores</strong>, asignarlos a equipos y configurar su disponibilidad.</li>
+  <li>Ir a <strong>Horario</strong>. Expandir "Sesiones restantes" y arrastrar cards a las pistas correspondientes.</li>
+  <li>Ajustar horas arrastrando sesiones dentro del grid.</li>
+  <li>Revisar avisos rojos y editar sesiones en conflicto desde el popup.</li>
+  <li>Exportar el JSON como backup desde <strong>Configuración</strong>.</li>
+</ol>
+
+<footer>
+  Voleibol Dashboard · resumen generado automáticamente.
+</footer>
+
+</div>
+</body>
+</html>
